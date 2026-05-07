@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>六楼小站 - 个人作品集</title>
+    <meta name="description" content="六楼小站 - 个人技术博客与作品集，展示开源项目、自制工具与技术文章">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            300: '#5eead4',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                        },
+                        dark: {
+                            bg: '#0a0a0f',
+                            card: '#16161f',
+                            border: '#272736',
+                            text: '#e8e8ef',
+                            muted: '#8b8b9a',
+                        },
+                        light: {
+                            bg: '#fafafa',
+                            card: '#ffffff',
+                            border: '#e2e2ea',
+                            text: '#1a1a2e',
+                            muted: '#6b6b7b',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out forwards',
+                        'slide-up': 'slideUp 0.6s ease-out forwards',
+                        'float': 'float 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(24px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' },
+                        },
+                    },
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="font-sans antialiased transition-colors duration-300 bg-light-bg text-light-text dark:bg-dark-bg dark:text-dark-text">
+
+    <!-- Particle Background Canvas -->
+    <canvas id="particle-canvas" class="fixed inset-0 w-full h-full pointer-events-none" style="z-index: 0;"></canvas>
+
+    <!-- Floating Bubbles Background -->
+    <div id="bubble-bg" class="bubble-bg"></div>
+
+    <!-- Mouse Trail Container -->
+    <div id="mouse-trail" class="fixed inset-0 w-full h-full pointer-events-none" style="z-index: 9999;"></div>
+
+    <!-- Scroll Spy Dots (Right Side) -->
+    <div id="scroll-spy" class="fixed right-2 sm:right-4 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-2 sm:gap-3">
+        <a href="#hero" class="scroll-spy-dot w-2.5 h-2.5 rounded-full bg-light-muted/40 dark:bg-dark-muted/40 hover:bg-primary-500 dark:hover:bg-primary-300 transition-all duration-300" data-section="hero" aria-label="首页"></a>
+        <a href="#about" class="scroll-spy-dot w-2.5 h-2.5 rounded-full bg-light-muted/40 dark:bg-dark-muted/40 hover:bg-primary-500 dark:hover:bg-primary-300 transition-all duration-300" data-section="about" aria-label="关于我"></a>
+        <a href="#projects" class="scroll-spy-dot w-2.5 h-2.5 rounded-full bg-light-muted/40 dark:bg-dark-muted/40 hover:bg-primary-500 dark:hover:bg-primary-300 transition-all duration-300" data-section="projects" aria-label="开源项目"></a>
+        <a href="#tools" class="scroll-spy-dot w-2.5 h-2.5 rounded-full bg-light-muted/40 dark:bg-dark-muted/40 hover:bg-primary-500 dark:hover:bg-primary-300 transition-all duration-300 hidden" data-section="tools" aria-label="自制工具"></a>
+        <a href="#blog" class="scroll-spy-dot w-2.5 h-2.5 rounded-full bg-light-muted/40 dark:bg-dark-muted/40 hover:bg-primary-500 dark:hover:bg-primary-300 transition-all duration-300" data-section="blog" aria-label="技术博客"></a>
+        <a href="#contact" class="scroll-spy-dot w-2.5 h-2.5 rounded-full bg-light-muted/40 dark:bg-dark-muted/40 hover:bg-primary-500 dark:hover:bg-primary-300 transition-all duration-300" data-section="contact" aria-label="联系方式"></a>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-light-bg/80 dark:bg-dark-bg/80 backdrop-blur-md border-b border-transparent">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-2.5 group">
+                    <img src="images/logo.png" alt="六楼小站" class="w-9 h-9 rounded-lg object-cover transition-all duration-300 group-hover:ring-2 group-hover:ring-primary-300/40">
+                    <span class="text-lg font-semibold tracking-tight">六楼小站</span>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center gap-1">
+                    <a href="#about" class="nav-link px-3.5 py-2 rounded-lg text-sm font-medium text-light-muted dark:text-dark-muted hover:text-light-text dark:hover:text-dark-text hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200">关于我</a>
+                    <a href="#projects" class="nav-link px-3.5 py-2 rounded-lg text-sm font-medium text-light-muted dark:text-dark-muted hover:text-light-text dark:hover:text-dark-text hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200">开源项目</a>
+                    <a href="#tools" class="nav-link px-3.5 py-2 rounded-lg text-sm font-medium text-light-muted dark:text-dark-muted hover:text-light-text dark:hover:text-dark-text hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200 hidden">自制工具</a>
+                    <a href="#blog" class="nav-link px-3.5 py-2 rounded-lg text-sm font-medium text-light-muted dark:text-dark-muted hover:text-light-text dark:hover:text-dark-text hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200">技术博客</a>
+                    <a href="#contact" class="nav-link px-3.5 py-2 rounded-lg text-sm font-medium text-light-muted dark:text-dark-muted hover:text-light-text dark:hover:text-dark-text hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200">联系方式</a>
+                </div>
+
+                <!-- Right Side -->
+                <div class="flex items-center gap-2">
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" class="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200" aria-label="切换主题">
+                        <!-- Sun Icon -->
+                        <svg id="sun-icon" class="w-5 h-5 hidden dark:block text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        <!-- Moon Icon -->
+                        <svg id="moon-icon" class="w-5 h-5 block dark:hidden text-light-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                        </svg>
+                    </button>
+
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200" aria-label="打开菜单">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden border-t border-light-border dark:border-dark-border bg-light-bg/95 dark:bg-dark-bg/95 backdrop-blur-md">
+            <div class="px-4 py-3 space-y-1">
+                <a href="#about" class="mobile-nav-link block px-4 py-2.5 rounded-lg text-sm font-medium text-light-muted dark:text-dark-muted hover:bg-black/5 dark:hover:bg-white/5 transition-all">关于我</a>
+                <a href="#projects" class="mobile-nav-link block px-4 py-2.5 rounded-lg text-sm font-medium text-light-muted dark:text-dark-muted hover:bg-black/5 dark:hover:bg-white/5 transition-all">开源项目</a>
+                <a href="#tools" class="mobile-nav-link block px-4 py-2.5 rounded-lg text-sm font-medium text-light-muted dark:text-dark-muted hover:bg-black/5 dark:hover:bg-white/5 transition-all hidden">自制工具</a>
+                <a href="#blog" class="mobile-nav-link block px-4 py-2.5 rounded-lg text-sm font-medium text-light-muted dark:text-dark-muted hover:bg-black/5 dark:hover:bg-white/5 transition-all">技术博客</a>
+                <a href="#contact" class="mobile-nav-link block px-4 py-2.5 rounded-lg text-sm font-medium text-light-muted dark:text-dark-muted hover:bg-black/5 dark:hover:bg-white/5 transition-all">联系方式</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
+        <!-- Background Decoration -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-1/4 left-1/4 w-72 h-72 bg-primary-300/5 rounded-full blur-3xl parallax-bg" data-parallax-speed="0.3"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary-400/5 rounded-full blur-3xl parallax-bg" data-parallax-speed="0.5"></div>
+        </div>
+
+        <div class="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
+            <!-- Avatar -->
+            <div class="mb-8 animate-fade-in" style="animation-delay: 0.1s;">
+                <div class="relative inline-block">
+                    <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden ring-4 ring-primary-300/20 dark:ring-primary-300/15 mx-auto">
+                        <!-- 头像占位图，后续替换为个人头像 -->
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=sixlab&backgroundColor=b6e3f4" alt="头像" class="w-full h-full object-cover bg-light-card dark:bg-dark-card">
+                    </div>
+                    <div class="absolute -bottom-1 -right-1 w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center ring-4 ring-light-bg dark:ring-dark-bg">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Name -->
+            <h1 id="typewriter" class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4 min-h-[1.2em]" data-text="你好，我是六楼的雨">
+                <span class="typewriter-text"></span><span class="typewriter-cursor">|</span>
+            </h1>
+
+            <!-- Tagline -->
+            <p class="text-lg sm:text-xl text-light-muted dark:text-dark-muted mb-6 max-w-2xl mx-auto leading-relaxed animate-slide-up" style="animation-delay: 0.3s;">
+                热爱技术的全栈开发者，专注于构建简洁、高效、优雅的软件解决方案
+            </p>
+
+            <!-- Tags -->
+            <div class="flex flex-wrap justify-center gap-2.5 mb-10 animate-slide-up" style="animation-delay: 0.4s;">
+                <span class="px-4 py-1.5 rounded-full text-sm font-medium bg-primary-50 dark:bg-primary-300/10 text-primary-700 dark:text-primary-300 border border-primary-200 dark:border-primary-300/20">
+                    全栈开发
+                </span>
+                <span class="px-4 py-1.5 rounded-full text-sm font-medium bg-primary-50 dark:bg-primary-300/10 text-primary-700 dark:text-primary-300 border border-primary-200 dark:border-primary-300/20">
+                    开源贡献者
+                </span>
+                <span class="px-4 py-1.5 rounded-full text-sm font-medium bg-primary-50 dark:bg-primary-300/10 text-primary-700 dark:text-primary-300 border border-primary-200 dark:border-primary-300/20">
+                    工具创造者
+                </span>
+                <span class="px-4 py-1.5 rounded-full text-sm font-medium bg-primary-50 dark:bg-primary-300/10 text-primary-700 dark:text-primary-300 border border-primary-200 dark:border-primary-300/20">
+                    技术写作者
+                </span>
+            </div>
+
+            <!-- Social Links -->
+            <div class="flex justify-center gap-4 mb-12 animate-slide-up" style="animation-delay: 0.5s;">
+                <a href="https://github.com/nianqinianyi" target="_blank" rel="noopener noreferrer" class="group p-3 rounded-xl bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border hover:border-primary-300/50 dark:hover:border-primary-300/30 transition-all duration-300 hover:-translate-y-0.5" aria-label="GitHub">
+                    <svg class="w-5 h-5 text-light-muted dark:text-dark-muted group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                </a>
+                <a href="mailto:root@sixlab.cn" class="group p-3 rounded-xl bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border hover:border-primary-300/50 dark:hover:border-primary-300/30 transition-all duration-300 hover:-translate-y-0.5" aria-label="邮箱">
+                    <svg class="w-5 h-5 text-light-muted dark:text-dark-muted group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                </a>
+                <a href="#contact" class="group p-3 rounded-xl bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border hover:border-primary-300/50 dark:hover:border-primary-300/30 transition-all duration-300 hover:-translate-y-0.5" aria-label="微信公众号">
+                    <svg class="w-5 h-5 text-light-muted dark:text-dark-muted group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178A1.17 1.17 0 014.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178 1.17 1.17 0 01-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 01.598.082l1.584.926a.272.272 0 00.14.045c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.582.582 0 01-.023-.156.49.49 0 01.201-.398C23.024 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-7.062-6.122zM14.516 13.41c.535 0 .969.44.969.982a.976.976 0 01-.969.983.976.976 0 01-.969-.983c0-.542.434-.982.97-.982zm4.844 0c.535 0 .969.44.969.982a.976.976 0 01-.969.983.976.976 0 01-.969-.983c0-.542.434-.982.97-.982z"/>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center gap-3 animate-slide-up" style="animation-delay: 0.6s;">
+                <a href="#projects" class="inline-flex items-center justify-center px-7 py-3 rounded-xl bg-primary-600 dark:bg-primary-500 text-white font-medium hover:bg-primary-700 dark:hover:bg-primary-400 transition-all duration-200 hover:shadow-lg hover:shadow-primary-500/20 w-full sm:w-40">
+                    <span>查看项目</span>
+                </a>
+                <a href="#contact" class="inline-flex items-center justify-center px-7 py-3 rounded-xl bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border font-medium hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200 w-full sm:w-40">
+                    <span>联系我</span>
+                </a>
+            </div>
+
+            <!-- Scroll Down -->
+            <div class="mt-20 animate-float">
+                <a href="#about" class="flex flex-col items-center gap-1 text-light-muted dark:text-dark-muted hover:text-primary-600 dark:hover:text-primary-300 transition-colors">
+                    <span class="text-xs">向下滚动</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 sm:py-32">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-parallax-speed="0.15">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">关于我</h2>
+                <p class="text-light-muted dark:text-dark-muted max-w-2xl mx-auto">热爱代码，享受创造的过程</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 items-start">
+                <!-- Left: Introduction -->
+                <div class="space-y-6">
+                    <div class="about-card bg-light-card dark:bg-dark-card rounded-2xl p-6 sm:p-8 border border-light-border dark:border-dark-border">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-primary-600 dark:text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            个人经历
+                        </h3>
+                        <div class="space-y-4 text-light-muted dark:text-dark-muted leading-relaxed">
+                            <!-- 修改说明：替换以下个人经历文字 -->
+                            <p>
+                                我是一名拥有 12 年开发经验的全栈工程师，深耕 Java 后端与 React / Vue.js 前端，同时涉猎 Python 量化与开发者工具领域。从企业级应用到独立开发，从架构设计到代码落地，我享受用技术解决实际问题的过程。
+                            </p>
+                            <p>
+                                工作之余，我热衷于开源社区贡献、技术博客写作与独立工具开发。我相信优秀的代码应该简洁、高效、可维护。在这里，你可以看到我的项目成果、技术沉淀与持续学习的路径。
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="about-card bg-light-card dark:bg-dark-card rounded-2xl p-6 sm:p-8 border border-light-border dark:border-dark-border">
+                        <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-primary-600 dark:text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                            </svg>
+                            专注方向
+                        </h3>
+                        <div class="space-y-3">
+                            <!-- 修改说明：替换以下专注方向 -->
+                            <div class="flex items-start gap-3">
+                                <div class="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2.5 flex-shrink-0"></div>
+                                <div>
+                                    <span class="font-medium text-light-text dark:text-dark-text">Java 后端 + React / Vue.js 前端</span>
+                                    <p class="text-sm text-light-muted dark:text-dark-muted mt-0.5">企业级全栈架构设计与落地</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2.5 flex-shrink-0"></div>
+                                <div>
+                                    <span class="font-medium text-light-text dark:text-dark-text">Python 量化</span>
+                                    <p class="text-sm text-light-muted dark:text-dark-muted mt-0.5">数据驱动的策略研究与自动化交易</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2.5 flex-shrink-0"></div>
+                                <div>
+                                    <span class="font-medium text-light-text dark:text-dark-text">开发者工具</span>
+                                    <p class="text-sm text-light-muted dark:text-dark-muted mt-0.5">构建提升效率的工具和脚本</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2.5 flex-shrink-0"></div>
+                                <div>
+                                    <span class="font-medium text-light-text dark:text-dark-text">开源软件</span>
+                                    <p class="text-sm text-light-muted dark:text-dark-muted mt-0.5">参与开源项目，回馈技术社区</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-1.5 h-1.5 rounded-full bg-primary-500 mt-2.5 flex-shrink-0"></div>
+                                <div>
+                                    <span class="font-medium text-light-text dark:text-dark-text">技术分享</span>
+                                    <p class="text-sm text-light-muted dark:text-dark-muted mt-0.5">分享学习心得和实践经验</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Tech Stack -->
+                <div class="about-card bg-light-card dark:bg-dark-card rounded-2xl p-6 sm:p-8 border border-light-border dark:border-dark-border">
+                    <h3 class="text-xl font-semibold mb-6 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary-600 dark:text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                        </svg>
+                        技术栈
+                    </h3>
+
+                    <!-- Backend -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-light-muted dark:text-dark-muted uppercase tracking-wider mb-3">后端</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-500/20">Java</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-500/20">Spring 全家桶</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/20">Python</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-500/20">Node.js</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-cyan-50 dark:bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-500/20">Go</span>
+                        </div>
+                    </div>
+
+                    <!-- Frontend -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-light-muted dark:text-dark-muted uppercase tracking-wider mb-3">前端</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-500/20">HTML5</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/20">CSS3</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-yellow-50 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-500/20">JavaScript</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-cyan-50 dark:bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-500/20">React</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/20">Vue.js</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-500/20">Tailwind CSS</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/20">TypeScript</span>
+                        </div>
+                    </div>
+
+                    <!-- Database & DevOps -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-light-muted dark:text-dark-muted uppercase tracking-wider mb-3">数据库 & DevOps</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-500/20">MySQL</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/20">PostgreSQL</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-500/20">Redis</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-500/20">MongoDB</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/20">Elastic Search</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-slate-50 dark:bg-slate-500/10 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-500/20">Linux</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/20">Docker</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/20">Kubernetes / K3s</span>
+                        </div>
+                    </div>
+
+                    <!-- Middleware -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-medium text-light-muted dark:text-dark-muted uppercase tracking-wider mb-3">中间件</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-500/20">RabbitMQ</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/20">ActiveMQ</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-slate-50 dark:bg-slate-500/10 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-500/20">Kafka</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-cyan-50 dark:bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-500/20">Nacos</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/20">Dubbo</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-500/20">MinIO / S3</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-500/20">视频直播</span>
+                        </div>
+                    </div>
+
+                    <!-- Tools -->
+                    <div>
+                        <h4 class="text-sm font-medium text-light-muted dark:text-dark-muted uppercase tracking-wider mb-3">工具</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-gray-50 dark:bg-gray-500/10 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-500/20">Git</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-500/20">Maven</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/20">Gradle</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-500/20">IntelliJ IDEA</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/20">VS Code</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-500/20">Android Studio</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/20">HBuilderX</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-slate-50 dark:bg-slate-500/10 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-500/20">Mac</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-orange-50 dark:bg-orange-500/10 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-500/20">Claude Code</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/20">CodeX</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/20">Cursor</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-cyan-50 dark:bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-500/20">Trae</span>
+                            <span class="tech-tag px-3.5 py-1.5 rounded-lg text-sm font-medium bg-gray-50 dark:bg-gray-500/10 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-500/20">NAS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-24 sm:py-32 bg-black/[0.02] dark:bg-white/[0.02]">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-parallax-speed="0.15">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">开源项目</h2>
+                <p class="text-light-muted dark:text-dark-muted max-w-2xl mx-auto">我在 GitHub 上维护的一些开源项目</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="projects-grid">
+                <!-- 项目卡片 1 -->
+                <a href="https://github.com/sixlab/mine-tv" target="_blank" rel="noopener noreferrer" class="project-card group block bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border overflow-hidden hover:border-primary-300/30 dark:hover:border-primary-300/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-500/5">
+                    <div class="h-40 bg-gradient-to-br from-primary-100 to-primary-50 dark:from-primary-900/20 dark:to-primary-800/10 flex items-center justify-center relative">
+                        <svg class="w-16 h-16 text-primary-400 dark:text-primary-500/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        <span class="absolute top-3 right-3 px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700">已归档</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors mb-3">mine-tv</h3>
+                        <p class="text-light-muted dark:text-dark-muted text-sm leading-relaxed mb-4">
+                            电视端影视播放聚合 App，支持多源聚合播放。后来在社区发现了更强大的 TvBox 项目，遂归档停更。
+                        </p>
+                        <div class="flex flex-wrap gap-1.5">
+                            <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-green-50 dark:bg-green-300/10 text-green-700 dark:text-green-300">Android</span>
+                            <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-cyan-50 dark:bg-cyan-300/10 text-cyan-700 dark:text-cyan-300">TV</span>
+                            <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-gray-50 dark:bg-gray-300/10 text-gray-700 dark:text-gray-300">已归档</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 项目卡片 2 -->
+                <a href="https://github.com/sixlab/six-tools" target="_blank" rel="noopener noreferrer" class="project-card group block bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border overflow-hidden hover:border-primary-300/30 dark:hover:border-primary-300/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-500/5">
+                    <div class="h-40 bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900/20 dark:to-blue-800/10 flex items-center justify-center relative">
+                        <svg class="w-16 h-16 text-blue-400 dark:text-blue-500/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span class="absolute top-3 right-3 px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700">已归档</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors mb-3">six-tools</h3>
+                        <p class="text-light-muted dark:text-dark-muted text-sm leading-relaxed mb-4">
+                            基于 Java 8 + JavaFX 开发的桌面端开发工具集合应用。因 JavaFX 生态日渐式微且 GUI 技术迭代，项目归档停更。
+                        </p>
+                        <div class="flex flex-wrap gap-1.5">
+                            <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-red-50 dark:bg-red-300/10 text-red-700 dark:text-red-300">Java</span>
+                            <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-orange-50 dark:bg-orange-300/10 text-orange-700 dark:text-orange-300">JavaFX</span>
+                            <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-gray-50 dark:bg-gray-300/10 text-gray-700 dark:text-gray-300">已归档</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 项目卡片 3 -->
+                <a href="https://github.com/sixlab/MinesiteX" target="_blank" rel="noopener noreferrer" class="project-card group block bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border overflow-hidden hover:border-primary-300/30 dark:hover:border-primary-300/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-500/5">
+                    <div class="h-40 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/20 dark:to-emerald-800/10 flex items-center justify-center relative">
+                        <svg class="w-16 h-16 text-emerald-400 dark:text-emerald-500/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                        </svg>
+                        <span class="absolute top-3 right-3 px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700">已归档</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors mb-3">MinesiteX</h3>
+                        <p class="text-light-muted dark:text-dark-muted text-sm leading-relaxed mb-4">
+                            基于 Spring Cloud 和 Spring Boot 的网站程序，支持微服务架构与单体架构两种部署模式。后因技术栈迭代升级，项目归档。
+                        </p>
+                        <div class="flex flex-wrap gap-1.5">
+                            <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-green-50 dark:bg-green-300/10 text-green-700 dark:text-green-300">Spring Cloud</span>
+                            <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-50 dark:bg-emerald-300/10 text-emerald-700 dark:text-emerald-300">Spring Boot</span>
+                            <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-gray-50 dark:bg-gray-300/10 text-gray-700 dark:text-gray-300">已归档</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- View More on GitHub -->
+            <div class="text-center mt-10">
+                <a href="https://github.com/sixlab/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border font-medium hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    <span>在 GitHub 上查看更多</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section id="tools" class="py-24 sm:py-32 hidden">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-parallax-speed="0.15">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">自制工具</h2>
+                <p class="text-light-muted dark:text-dark-muted max-w-2xl mx-auto">为解决日常问题而开发的小工具和脚本</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 gap-6" id="tools-grid">
+                <!-- 工具卡片 1 -->
+                <!-- 修改说明：复制以下 .tool-card 块来添加新工具 -->
+                <a href="https://tools.sixlab.cn/json" target="_blank" rel="noopener noreferrer" class="tool-card group block bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border p-6 hover:border-primary-300/30 dark:hover:border-primary-300/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-500/5">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-primary-50 dark:bg-primary-300/10 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-primary-600 dark:text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors mb-1">JSON 格式化工具</h3>
+                            <p class="text-light-muted dark:text-dark-muted text-sm leading-relaxed mb-3">
+                                在线 JSON 格式化、校验、压缩工具，支持语法高亮和错误定位。
+                            </p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="px-2 py-0.5 rounded text-xs bg-primary-50 dark:bg-primary-300/10 text-primary-700 dark:text-primary-300">Web</span>
+                                <span class="px-2 py-0.5 rounded text-xs bg-yellow-50 dark:bg-yellow-300/10 text-yellow-700 dark:text-yellow-300">JavaScript</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 工具卡片 2 -->
+                <a href="https://github.com/nianqinianyi/git-helper" target="_blank" rel="noopener noreferrer" class="tool-card group block bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border p-6 hover:border-primary-300/30 dark:hover:border-primary-300/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-500/5">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-300/10 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors mb-1">Git 提交助手</h3>
+                            <p class="text-light-muted dark:text-dark-muted text-sm leading-relaxed mb-3">
+                                交互式 Git 提交信息生成器，支持 Conventional Commits 规范，让提交信息更规范。
+                            </p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="px-2 py-0.5 rounded text-xs bg-blue-50 dark:bg-blue-300/10 text-blue-700 dark:text-blue-300">Node.js</span>
+                                <span class="px-2 py-0.5 rounded text-xs bg-gray-50 dark:bg-gray-300/10 text-gray-700 dark:text-gray-300">CLI</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 工具卡片 3 -->
+                <a href="https://tools.sixlab.cn/md" target="_blank" rel="noopener noreferrer" class="tool-card group block bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border p-6 hover:border-primary-300/30 dark:hover:border-primary-300/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-500/5">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-300/10 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-purple-600 dark:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors mb-1">Markdown 转换器</h3>
+                            <p class="text-light-muted dark:text-dark-muted text-sm leading-relaxed mb-3">
+                                Markdown 转 HTML/PDF/Word，支持代码高亮和自定义样式模板。
+                            </p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="px-2 py-0.5 rounded text-xs bg-purple-50 dark:bg-purple-300/10 text-purple-700 dark:text-purple-300">Python</span>
+                                <span class="px-2 py-0.5 rounded text-xs bg-primary-50 dark:bg-primary-300/10 text-primary-700 dark:text-primary-300">Web</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 工具卡片 4 -->
+                <a href="https://github.com/nianqinianyi/dev-setup" target="_blank" rel="noopener noreferrer" class="tool-card group block bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border p-6 hover:border-primary-300/30 dark:hover:border-primary-300/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-500/5">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-300/10 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-6 h-6 text-orange-600 dark:text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors mb-1">开发环境一键配置</h3>
+                            <p class="text-light-muted dark:text-dark-muted text-sm leading-relaxed mb-3">
+                                新电脑环境快速配置脚本，自动安装开发工具、配置 SSH、同步 dotfiles。
+                            </p>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="px-2 py-0.5 rounded text-xs bg-orange-50 dark:bg-orange-300/10 text-orange-700 dark:text-orange-300">Shell</span>
+                                <span class="px-2 py-0.5 rounded text-xs bg-gray-50 dark:bg-gray-300/10 text-gray-700 dark:text-gray-300">Script</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blog" class="py-24 sm:py-32 bg-black/[0.02] dark:bg-white/[0.02]">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-parallax-speed="0.15">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">技术博客</h2>
+                <p class="text-light-muted dark:text-dark-muted max-w-2xl mx-auto">记录学习过程中的思考与总结</p>
+            </div>
+
+            <div class="space-y-4" id="blog-list">
+                <!-- 博客文章 1 -->
+                <article class="blog-item group bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border p-5 sm:p-6 hover:border-primary-300/30 dark:hover:border-primary-300/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-500/5">
+                    <a href="https://blog.sixlab.cn/posts/2025/0701/rust-03-fn" target="_blank" rel="noopener noreferrer" class="block">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+                            <time class="text-sm text-light-muted dark:text-dark-muted font-mono flex-shrink-0 w-28">2025-07-01</time>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-base sm:text-lg font-semibold group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors mb-1.5 truncate">
+                                    Rust 学习笔记 03 - 注释与函数
+                                </h3>
+                                <p class="text-sm text-light-muted dark:text-dark-muted line-clamp-2">
+                                    深入 Rust 函数的定义、参数、返回值与注释规范，掌握函数式编程基础。
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-1.5 text-light-muted dark:text-dark-muted group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors flex-shrink-0">
+                                <span class="text-sm hidden sm:inline">阅读</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-3 border-t border-light-border dark:border-dark-border flex flex-wrap gap-2">
+                            <span class="px-2 py-0.5 rounded text-xs bg-orange-50 dark:bg-orange-300/10 text-orange-700 dark:text-orange-300">Rust</span>
+                            <span class="px-2 py-0.5 rounded text-xs bg-cyan-50 dark:bg-cyan-300/10 text-cyan-700 dark:text-cyan-300">学习</span>
+                            <span class="px-2 py-0.5 rounded text-xs bg-blue-50 dark:bg-blue-300/10 text-blue-700 dark:text-blue-300">笔记</span>
+                        </div>
+                    </a>
+                </article>
+
+                <!-- 博客文章 2 -->
+                <article class="blog-item group bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border p-5 sm:p-6 hover:border-primary-300/30 dark:hover:border-primary-300/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-500/5">
+                    <a href="https://blog.sixlab.cn/posts/2025/0630/rust-02-var" target="_blank" rel="noopener noreferrer" class="block">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+                            <time class="text-sm text-light-muted dark:text-dark-muted font-mono flex-shrink-0 w-28">2025-06-30</time>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-base sm:text-lg font-semibold group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors mb-1.5 truncate">
+                                    Rust 学习笔记 02 - 常量、变量和数据类型
+                                </h3>
+                                <p class="text-sm text-light-muted dark:text-dark-muted line-clamp-2">
+                                    详解 Rust 中常量、变量（可变与不可变）与静态变量的定义及区别，深入剖析标量与复合数据类型的特性。
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-1.5 text-light-muted dark:text-dark-muted group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors flex-shrink-0">
+                                <span class="text-sm hidden sm:inline">阅读</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-3 border-t border-light-border dark:border-dark-border flex flex-wrap gap-2">
+                            <span class="px-2 py-0.5 rounded text-xs bg-orange-50 dark:bg-orange-300/10 text-orange-700 dark:text-orange-300">Rust</span>
+                            <span class="px-2 py-0.5 rounded text-xs bg-cyan-50 dark:bg-cyan-300/10 text-cyan-700 dark:text-cyan-300">学习</span>
+                            <span class="px-2 py-0.5 rounded text-xs bg-blue-50 dark:bg-blue-300/10 text-blue-700 dark:text-blue-300">笔记</span>
+                        </div>
+                    </a>
+                </article>
+
+                <!-- 博客文章 3 -->
+                <article class="blog-item group bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border p-5 sm:p-6 hover:border-primary-300/30 dark:hover:border-primary-300/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-500/5">
+                    <a href="https://blog.sixlab.cn/posts/2025/0620/rust-01-hellword" target="_blank" rel="noopener noreferrer" class="block">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+                            <time class="text-sm text-light-muted dark:text-dark-muted font-mono flex-shrink-0 w-28">2025-06-20</time>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-base sm:text-lg font-semibold group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors mb-1.5 truncate">
+                                    Rust 学习笔记 01 - Hello world 和 格式化输出
+                                </h3>
+                                <p class="text-sm text-light-muted dark:text-dark-muted line-clamp-2">
+                                    从 Hello World 入门 Rust，详解 main 函数入口及 println! 宏的多种格式化输出技巧。
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-1.5 text-light-muted dark:text-dark-muted group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors flex-shrink-0">
+                                <span class="text-sm hidden sm:inline">阅读</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-3 border-t border-light-border dark:border-dark-border flex flex-wrap gap-2">
+                            <span class="px-2 py-0.5 rounded text-xs bg-orange-50 dark:bg-orange-300/10 text-orange-700 dark:text-orange-300">Rust</span>
+                            <span class="px-2 py-0.5 rounded text-xs bg-cyan-50 dark:bg-cyan-300/10 text-cyan-700 dark:text-cyan-300">学习</span>
+                            <span class="px-2 py-0.5 rounded text-xs bg-blue-50 dark:bg-blue-300/10 text-blue-700 dark:text-blue-300">笔记</span>
+                        </div>
+                    </a>
+                </article>
+
+                <!-- 博客文章 4 -->
+                <article class="blog-item group bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border p-5 sm:p-6 hover:border-primary-300/30 dark:hover:border-primary-300/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-500/5">
+                    <a href="https://blog.sixlab.cn/posts/2025/0619/imback" target="_blank" rel="noopener noreferrer" class="block">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+                            <time class="text-sm text-light-muted dark:text-dark-muted font-mono flex-shrink-0 w-28">2025-06-19</time>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-base sm:text-lg font-semibold group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors mb-1.5 truncate">
+                                    我又回来啦
+                                </h3>
+                                <p class="text-sm text-light-muted dark:text-dark-muted line-clamp-2">
+                                    从 2015 年 WordPress 到 2025 年 VitePress，十年博客路的重建记录。分享迁移心得、AI 辅助内容转换经验，以及未来的更新计划。
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-1.5 text-light-muted dark:text-dark-muted group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors flex-shrink-0">
+                                <span class="text-sm hidden sm:inline">阅读</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-3 border-t border-light-border dark:border-dark-border flex flex-wrap gap-2">
+                            <span class="px-2 py-0.5 rounded text-xs bg-gray-50 dark:bg-gray-300/10 text-gray-700 dark:text-gray-300">随想</span>
+                        </div>
+                    </a>
+                </article>
+            </div>
+
+            <!-- View More -->
+            <div class="text-center mt-10">
+                <a href="https://blog.sixlab.cn" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border font-medium hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200">
+                    <span>查看全部文章</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 sm:py-32">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-parallax-speed="0.15">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">联系方式</h2>
+                <p class="text-light-muted dark:text-dark-muted max-w-2xl mx-auto">欢迎交流技术问题、项目合作或其他任何话题</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- GitHub -->
+                <a href="https://github.com/nianqinianyi" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-4 p-5 bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border hover:border-primary-300/30 dark:hover:border-primary-300/20 transition-all duration-300 hover:-translate-y-0.5">
+                    <div class="w-11 h-11 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 group-hover:bg-gray-200 dark:group-hover:bg-gray-700 transition-colors">
+                        <svg class="w-5 h-5 text-gray-700 dark:text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-sm font-medium">GitHub</div>
+                        <div class="text-sm text-light-muted dark:text-dark-muted truncate">@nianqinianyi</div>
+                    </div>
+                </a>
+
+                <!-- Email -->
+                <a href="mailto:root@sixlab.cn" class="group flex items-center gap-4 p-5 bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border hover:border-primary-300/30 dark:hover:border-primary-300/20 transition-all duration-300 hover:-translate-y-0.5">
+                    <div class="w-11 h-11 rounded-xl bg-primary-50 dark:bg-primary-300/10 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-primary-600 dark:text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-sm font-medium">邮箱</div>
+                        <div class="text-sm text-light-muted dark:text-dark-muted truncate">root@sixlab.cn</div>
+                    </div>
+                </a>
+
+                <!-- 微信公众号 -->
+                <!-- 修改说明：将 images/wechat-qr.jpg 替换为实际微信公众号二维码图片 -->
+                <div class="group relative flex items-center gap-4 p-5 bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border cursor-pointer">
+                    <!-- 默认内容 -->
+                    <div class="flex items-center gap-4 w-full">
+                        <div class="w-11 h-11 rounded-xl bg-green-50 dark:bg-green-500/10 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178A1.17 1.17 0 014.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178 1.17 1.17 0 01-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 01.598.082l1.584.926a.272.272 0 00.14.045c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.582.582 0 01-.023-.156.49.49 0 01.201-.398C23.024 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-7.062-6.122zM14.516 13.41c.535 0 .969.44.969.982a.976.976 0 01-.969.983.976.976 0 01-.969-.983c0-.542.434-.982.97-.982zm4.844 0c.535 0 .969.44.969.982a.976.976 0 01-.969.983.976.976 0 01-.969-.983c0-.542.434-.982.97-.982z"/>
+                            </svg>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-sm font-medium">微信公众号</div>
+                            <div class="text-sm text-light-muted dark:text-dark-muted">sixlab</div>
+                        </div>
+                    </div>
+                    <!-- 悬浮二维码 -->
+                    <div class="absolute left-1/2 -translate-x-1/2 bottom-[calc(100%+8px)] w-44 opacity-0 group-hover:opacity-100 transition-all duration-300 scale-90 group-hover:scale-100 pointer-events-none z-50">
+                        <div class="bg-light-card dark:bg-dark-card rounded-xl border border-light-border dark:border-dark-border shadow-2xl dark:shadow-black/40 p-3">
+                            <img src="images/wechat-qr.jpg" alt="微信公众号二维码" class="w-full aspect-square object-contain rounded-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="w-full aspect-square rounded-lg border-2 border-dashed border-green-300 dark:border-green-600 flex items-center justify-center hidden">
+                                <span class="text-xs text-green-600 dark:text-green-400 text-center px-2">请上传<br>二维码图片</span>
+                            </div>
+                            <div class="text-xs text-center text-light-muted dark:text-dark-muted mt-2">扫码关注</div>
+                        </div>
+                        <!-- 箭头 -->
+                        <div class="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-3 h-3 bg-light-card dark:bg-dark-card border-r border-b border-light-border dark:border-dark-border rotate-45"></div>
+                    </div>
+                </div>
+
+                <!-- 微博 -->
+                <a href="https://weibo.com/nianqinianyi" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-4 p-5 bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border hover:border-primary-300/30 dark:hover:border-primary-300/20 transition-all duration-300 hover:-translate-y-0.5">
+                    <div class="w-11 h-11 rounded-xl bg-red-50 dark:bg-red-500/10 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-red-500 dark:text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.739 5.443zM9.05 17.219c-.384.616-1.208.884-1.829.602-.612-.279-.793-.991-.406-1.593.379-.595 1.176-.861 1.793-.601.622.263.82.972.442 1.592zm1.27-1.627c-.141.237-.449.353-.689.253-.236-.09-.313-.361-.177-.586.138-.227.436-.346.672-.24.239.09.315.36.194.573zm.176-2.719c-1.893-.493-4.033.45-4.857 2.118-.836 1.704-.026 3.591 1.886 4.21 1.983.64 4.318-.341 5.132-2.179.8-1.793-.201-3.642-2.161-4.149zm7.563-1.224c-.346-.105-.579-.18-.405-.649.381-1.017.42-1.894-.003-2.521-.789-1.188-2.947-1.127-5.411-.034 0 0-.776.34-.577-.274.381-1.217.324-2.236-.27-2.82-1.344-1.32-4.918.045-7.985 3.052C1.544 10.551 0 12.715 0 14.543 0 18.012 4.452 20 8.806 20c5.709 0 9.512-3.32 9.512-5.956 0-1.594-1.346-2.499-2.249-2.395zm1.291-5.705c-.653-.759-1.618-1.094-2.573-.987-.387.043-.64.395-.596.777.043.387.396.641.778.597.551-.061 1.102.13 1.473.56.372.43.507 1.002.375 1.547-.092.375.137.755.512.848.376.092.756-.137.849-.513.236-.961.013-1.981-.818-2.829zm2.316-2.445c-1.37-1.594-3.395-2.298-5.396-2.073-.593.066-1.014.596-.948 1.188.066.593.597 1.014 1.189.948 1.387-.154 2.749.332 3.671 1.407.922 1.073 1.251 2.514.908 3.865-.147.569.196 1.148.765 1.295.57.148 1.149-.195 1.296-.764.492-1.905.028-3.969-1.485-5.866z"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-sm font-medium">微博</div>
+                        <div class="text-sm text-light-muted dark:text-dark-muted truncate">@nianqinianyi</div>
+                    </div>
+                </a>
+
+                <!-- B站 -->
+                <a href="https://space.bilibili.com/1903136742" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-4 p-5 bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border hover:border-primary-300/30 dark:hover:border-primary-300/20 transition-all duration-300 hover:-translate-y-0.5">
+                    <div class="w-11 h-11 rounded-xl bg-pink-50 dark:bg-pink-500/10 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-pink-500 dark:text-pink-400" fill="currentColor" viewBox="0 0 512 512">
+                            <path d="M488.6 104.1c16.7 18.1 24.4 39.7 23.3 65.7v202.4c-.4 26.4-9.2 48.1-26.5 65.1-17.2 17-39.1 25.9-65.5 26.7H92.02c-26.45-.8-48.21-9.8-65.28-27.2C9.682 419.4.767 397.5.968 371.6V169.2c-2.009-25.4 7.445-47.8 28.362-67L100 8.4C104.5 3.1 110.5.2 117 .1c6.5-.1 12.7 2.6 17.4 7.9l72 76.5h99.3l72-76.5c4.7-5.3 10.9-8 17.4-7.9 6.5.1 12.5 3 17 8.4l70.5 93.8zM92.52 219.5c-13.78 0-24.96 11.2-24.96 25s11.18 25 24.96 25c13.78 0 24.96-11.2 24.96-25s-11.18-25-24.96-25zm327.18 0c-13.8 0-25 11.2-25 25s11.2 25 25 25c13.8 0 25-11.2 25-25s-11.2-25-25-25z"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-sm font-medium">哔哩哔哩</div>
+                        <div class="text-sm text-light-muted dark:text-dark-muted truncate">@蛮鹰软件</div>
+                    </div>
+                </a>
+
+                <!-- RSS -->
+                <a href="https://blog.sixlab.cn/feed.xml" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-4 p-5 bg-light-card dark:bg-dark-card rounded-2xl border border-light-border dark:border-dark-border hover:border-primary-300/30 dark:hover:border-primary-300/20 transition-all duration-300 hover:-translate-y-0.5">
+                    <div class="w-11 h-11 rounded-xl bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-orange-600 dark:text-orange-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19.199 24C19.199 13.467 10.533 4.8 0 4.8V0c13.165 0 24 10.835 24 24h-4.801zM3.291 17.415a3.3 3.3 0 013.293 3.295A3.303 3.303 0 013.283 24C1.47 24 0 22.526 0 20.71s1.475-3.294 3.291-3.295zM15.909 24h-4.665c0-6.169-5.075-11.245-11.244-11.245V8.09c8.727 0 15.909 7.184 15.909 15.91z"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-sm font-medium">RSS 订阅</div>
+                        <div class="text-sm text-light-muted dark:text-dark-muted truncate">博客更新推送</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-6 border-t border-light-border dark:border-dark-border">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-light-muted dark:text-dark-muted">
+                <!-- 左：建站时间 -->
+                <div id="site-days">已建站 0 天</div>
+
+                <!-- 中：备案号 -->
+                <div class="flex items-center gap-3 flex-wrap justify-center">
+                    <!-- 修改说明：替换为实际公安网备案号 -->
+                    <a href="https://beian.mps.gov.cn/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1 hover:text-light-text dark:hover:text-dark-text transition-colors">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                        <span>京公网安备XXXXXXXXXXX号</span>
+                    </a>
+                    <span class="hidden sm:inline">|</span>
+                    <!-- 修改说明：替换为实际ICP备案号 -->
+                    <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" class="hover:text-light-text dark:hover:text-dark-text transition-colors">京ICP备XXXXXXXX号-1</a>
+                </div>
+
+                <!-- 右：Copyright -->
+                <div>
+                    <span>Design by <a href="https://kimi.moonshot.cn/" target="_blank" rel="noopener noreferrer" class="underline underline-offset-2 decoration-primary-300/50 dark:decoration-primary-300/40 hover:text-primary-600 dark:hover:text-primary-300 hover:decoration-primary-500 dark:hover:decoration-primary-300 transition-colors">kimi 2.6</a></span>
+                    <span class="mx-2">·</span>
+                    <span>&copy; 2015 - <span class="current-year"></span> 六楼小站</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+</body>
+</html>
